@@ -1,9 +1,9 @@
 import uuid  # Required for unique book instances.
+from datetime import date
 from django.db import models
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns.
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
-from datetime import date
 
 
 # Create your models here.
@@ -48,7 +48,7 @@ class BookInstance(models.Model):
     book = models.ForeignKey('Book', on_delete=models.RESTRICT)
     imprint = models.CharField(max_length=200)
     due_back = models.DateField(null=True, blank=True)
-    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    borrower = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
     LOAN_STATUS = (('m', _('Maintenance')), ('o', _('On loan')), ('a', _('Available')), ('r', _('Reserved')),)
     status = models.CharField(max_length=1, choices=LOAN_STATUS, blank=True, default='m',
                               help_text=_('Book availability', ))
@@ -68,10 +68,10 @@ class BookInstance(models.Model):
 
 class Author(models.Model):
     """Model representing an author."""
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    date_of_birth = models.DateField(null=True, blank=True)
-    date_of_death = models.DateField(_('Died'), null=True, blank=True)
+    first_name = models.CharField(_('first name'), max_length=100)
+    last_name = models.CharField(_('last name'), max_length=100)
+    date_of_birth = models.DateField(_('birth date'), null=True, blank=True)
+    date_of_death = models.DateField(_('death date'), null=True, blank=True)
 
     class Meta:
         ordering = ['last_name', 'first_name']

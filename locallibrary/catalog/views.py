@@ -39,11 +39,29 @@ class BookListView(generic.ListView):
     paginate_by = 10
 
 
-class BookDetailView(generic.DetailView):
-    model = Book
-
-
 def book_detail_view(request, primary_key):
     book = get_object_or_404(Book, pk=primary_key)
-
     return render(request, 'catalog/book_detail.html', context={'book': book})
+
+
+class AuthorListView(generic.ListView):
+    model = Author
+    paginate_by = 10
+
+
+def author_detail_view(request, primary_key):
+    author = get_object_or_404(Author, pk=primary_key)
+    return render(request, 'catalog/author_detail.html', context={'author': author})
+
+
+class LoanedBooksByUserListView(generic.ListView):
+    model = BookInstance
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by(
+                'due_back')
+        else:
+            return BookInstance.objects.none()
